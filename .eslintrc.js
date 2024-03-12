@@ -17,9 +17,26 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    'max-statements-per-line': ['warn', { max: 1 }],
+    'no-nested-ternary': 'warn',
+    'no-unneeded-ternary': 'warn',
+    'one-var-declaration-per-line': ['warn', 'always'],
+    'operator-assignment': ['warn', 'always'],
+    'operator-linebreak': ['warn', 'none'],
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'variable',
+        format: ['snake_case', 'UPPER_CASE', 'PascalCase'],
+      },
+      {
+        selector: 'enumMember',
+        format: ['UPPER_CASE'],
+      },
+    ],
   },
 };

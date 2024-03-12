@@ -14,8 +14,8 @@ export class User {
   @Prop()
   password: string;
 
-  @Prop({ default: 'user' })
-  user_type: string;
+  @Prop({ enum: ['freelancer', 'client', 'user'], default: 'user' })
+  user_type: 'freelancer' | 'client' | 'user';
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

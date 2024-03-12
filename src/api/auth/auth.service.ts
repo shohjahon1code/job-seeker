@@ -2,9 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/models/user.schema';
-import { AuthDto } from './dto/auth.dto';
+import { AuthDto, LoginDTO } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
-import { genSalt, hash } from 'bcryptjs';
+import { genSalt, hash, compare } from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +24,29 @@ export class AuthService {
       ...body,
       password: body.password.length ? passwordHash : '',
     });
+    await newUser.save();
     const token = await this.issueTokenPair(String(newUser._id));
-    return { user: newUser.save(), ...token };
+    return { user: newUser, ...token };
+  }
+
+  async login(body: LoginDTO) {
+    const existingUser = await this.isExistingUser(body.email);
+    if (!existingUser) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (body.password.length > 0) {
+      const current_password = await compare(
+        body.password,
+        existingUser.password,
+      );
+
+      if (!current_password) throw new BadRequestException('Invalid password');
+
+      const token = await this.issueTokenPair(String(existingUser._id));
+
+      return { user: existingUser, ...token };
+    }
   }
 
   async isExistingUser(email: string) {
