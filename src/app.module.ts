@@ -7,6 +7,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './api/users/users.module';
 import { LoggerMiddleware } from './middleware/request-logger';
 import { AuthModule } from './api/auth/auth.module';
+import { OtpModule } from './api/otp/otp.module';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -23,9 +25,15 @@ import { AuthModule } from './api/auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    OtpModule,
   ],
-  controllers: [UsersController],
-  providers: [],
+  controllers: [],
+  providers: [
+    // {
+    // provide: APP_GUARD,
+    // useClass: AuthG
+    // },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

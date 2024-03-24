@@ -2,9 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/models/user.schema';
-import { AuthDto, LoginDTO } from './dto/auth.dto';
+import { AuthDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { genSalt, hash, compare } from 'bcryptjs';
+import { LoginDTO } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
     });
     await newUser.save();
     const token = await this.issueTokenPair(String(newUser._id));
-    return { user: newUser, ...token };
+    return { user: newUser, token };
   }
 
   async login(body: LoginDTO) {
@@ -45,7 +46,7 @@ export class AuthService {
 
       const token = await this.issueTokenPair(String(existingUser._id));
 
-      return { user: existingUser, ...token };
+      return { existingUser, token };
     }
   }
 
@@ -59,10 +60,7 @@ export class AuthService {
     const refreshToken = await this.jwtService.signAsync(data, {
       expiresIn: '15d',
     });
-    const accessToken = await this.jwtService.signAsync(data, {
-      expiresIn: '1h',
-    });
 
-    return { refreshToken, accessToken };
+    return refreshToken;
   }
 }
